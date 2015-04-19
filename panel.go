@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/fzzy/radix/redis"
 	"log"
 )
 
@@ -12,6 +13,15 @@ func errHandler(err error) {
 }
 
 func main() {
+	RedisClient, err := redis.Dial("tcp", "127.0.0.1:6379")
+
+	if err != nil {
+		errHandler(err)
+	}
+
+	RedisClient.Cmd("del", "sheriff:realtime")
+	RedisClient.Close()
+
 	flag.Parse()
 	StartServer()
 }
