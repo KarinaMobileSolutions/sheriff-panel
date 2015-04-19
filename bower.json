@@ -1,0 +1,10 @@
+{
+  "name": "PHPRedMin",
+  "dependencies": {
+    "ng-websocket": "0.*",
+    "bootstrap": "3.*",
+    "flot": "0.8.*",
+    "font-awesome": "4.*",
+    "timezone-js": "0.*"
+  }
+}
