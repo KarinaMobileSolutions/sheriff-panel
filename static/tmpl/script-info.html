@@ -1,18 +1,12 @@
-<div class="row-fluid">
-    <span class="fa fa-info"></span> Info
+<div class="col-xs-2">
+    <span class="fa fa-tag"></span> {{name}}
 </div>
-<div class="well">
-    <div class="col-xs-3">
-        <span class="fa fa-tag"></span> {{name}}
-    </div>
-    <div class="col-xs-3">
-        <span class="fa fa-terminal"></span> {{details.cmd}} {{details.args}}
-    </div>
-    <div class="col-xs-3">
-        <span class="fa fa-folder"></span> {{details.directory}}
-    </div>
-    <div class="col-xs-3">
-        <span class="fa fa-gears"></span> {{details.format}}
-    </div>
-    <div class="clearfix"></div>
+<div class="col-xs-2">
+    <span class="fa fa-terminal"></span> {{details.cmd}} {{details.args}}
+</div>
+<div class="col-xs-4">
+    <span class="fa fa-folder"></span> {{details.directory}}
+</div>
+<div class="col-xs-2">
+    <span class="fa fa-gears"></span> {{details.format}}
 </div>

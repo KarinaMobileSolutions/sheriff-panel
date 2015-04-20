@@ -1,8 +1,6 @@
 <div class="row-fluid">
-    <div class="col-xs-1">
-        <span class="fa fa-line-chart"></span> Chart
-    </div>
-    <div class="col-xs-1">
+    <script-info name="{{name}}"></script-info>
+    <div class="col-xs-2">
         <select ng-model="script.period" ng-change="script.draw()" name="period">
             <option value="hour">Last Hour</option>
             <option value="day">Last Day</option>
