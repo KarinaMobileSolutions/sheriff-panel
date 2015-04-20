@@ -33,7 +33,13 @@
         <div class="container-fluid">
             {[{template "navbar"}]}
             <div ng-controller="ChartController as chartCtrl">
-                <div class="row-fluid" ng-repeat="chart in chartCtrl.charts">
+                <div class="well input-group">
+                    <input type="text" ng-model="query" placeholder="Script Name" class="form-control"/>
+                    <span class="input-group-addon">
+                        <i class="fa fa-search"></i>
+                    </span>
+                </div>
+                <div class="row-fluid" ng-repeat="chart in chartCtrl.charts | orderBy:'script.name' | filter:query">
                     <script-info name="{{chart.script.name}}"></script-info>
                     <script-chart name="{{chart.script.name}}"></script-chart>
                     <div class="clearfix"></div>
