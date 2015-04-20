@@ -5,6 +5,7 @@ import (
 	"github.com/fzzy/radix/redis"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
@@ -67,17 +68,50 @@ func getScriptChart(w http.ResponseWriter, r *http.Request) {
 	defer RedisClient.Close()
 
 	scriptName := r.URL.Path[len("/scripts/chart/"):]
+	queryValues := r.URL.Query()
 
-	w.Header().Set("Content-Type", "application/json")
+	if val, ok := queryValues["period"]; ok {
+		var d time.Duration = 0
+		switch val[0] {
+		case "hour":
+			d = time.Hour
+			break
+		case "day":
+			d = 24 * time.Hour
+			break
+		case "week":
+			d = 7 * 24 * time.Hour
+			break
+		case "month":
+			d = 30 * 7 * 24 * time.Hour
+			break
+		}
 
-	data, err := RedisClient.Cmd("zrange", "sheriff:"+scriptName, 0, -1, "withscores").Hash()
+		t := time.Now().Add(-1 * d).Unix()
 
-	if err != nil {
-		errHandler(err)
+		data, err := RedisClient.Cmd("zrangebyscore", "sheriff:"+scriptName, t, "+inf", "withscores").Hash()
+
+		w.Header().Set("Content-Type", "application/json")
+
+		if err != nil {
+			errHandler(err)
+		}
+
+		result, _ := json.Marshal(data)
+		template.Must(template.New("scripts").Parse(string(result[:]))).Execute(w, r)
+	} else {
+		data, err := RedisClient.Cmd("zrange", "sheriff:"+scriptName, 0, -1, "withscores").Hash()
+
+		w.Header().Set("Content-Type", "application/json")
+
+		if err != nil {
+			errHandler(err)
+		}
+
+		result, _ := json.Marshal(data)
+		template.Must(template.New("scripts").Parse(string(result[:]))).Execute(w, r)
+
 	}
-
-	result, _ := json.Marshal(data)
-	template.Must(template.New("scripts").Parse(string(result[:]))).Execute(w, r)
 
 }
 
