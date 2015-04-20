@@ -1,0 +1,19 @@
+<div class="modal fade" id="{{name}}modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">{{name}} info</h4>
+            </div>
+            <div class="modal-body">
+                <span class="fa fa-book"></span> {{details.description}}<br/>
+                <span class="fa fa-terminal"></span> {{details.cmd}} {{details.args}}<br/>
+                <span class="fa fa-folder"></span> {{details.directory}}</br>
+                <span class="fa fa-gears"></span> {{details.format}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
