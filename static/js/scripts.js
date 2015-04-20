@@ -4,8 +4,8 @@
     plots = [];
     plotsData = {};
 
-    (function() {
-        var conn = new WebSocket("ws://127.0.0.1:8080/ws");
+    app.run(['$location', function($location) {
+        var conn = new WebSocket("ws://"+$location.host()+":"+$location.port()+"/ws");
         conn.onclose = function(evt) {
             $('#errormodal').modal('show');
         };
@@ -17,7 +17,7 @@
             plots[result[0]].setupGrid();
             plots[result[0]].draw();
         };
-    })();
+    }]);
 
 
     timezoneJS.timezone.zoneFileBasePath = "static/tz";
