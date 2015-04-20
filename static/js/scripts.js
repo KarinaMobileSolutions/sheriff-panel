@@ -48,17 +48,27 @@
             },
             templateUrl: 'static/tmpl/script-chart.html',
             controller: ['$http', '$scope', function($http, $scope) {
-                $http.get('/scripts/chart/'+$scope.name).success(function(data) {
-                    var chartData = [];
+                this.period = 'hour';
 
-                    $.each(data, function(index, key) {
-                        var value = index.split(':')[1];
+                var chart = this;
 
-                        chartData.push([key * 1000, value]);
+                this.draw = function() {
+                    $http.get('/scripts/chart/'+$scope.name+'?period='+chart.period).success(function(data) {
+                        var chartData = [];
+
+                        $.each(data, function(index, key) {
+                            var value = index.split(':')[1];
+
+                            chartData.push([key * 1000, value]);
+                        });
+
+                        plotsData[$scope.name] = chartData;
+
+                        plots[$scope.name] = $.plot("#chart"+$scope.name, [chartData], {series:{shadowSize:0}, xaxis: {mode: "time", timezone:"browser"}});
                     });
+                };
 
-                    plots[$scope.name] = $.plot("#chart"+$scope.name, [chartData], {series:{shadowSize:0}, xaxis: {mode: "time", timezone:"browser"}});
-                });
+                this.draw();
             }],
             controllerAs: 'script',
         };
