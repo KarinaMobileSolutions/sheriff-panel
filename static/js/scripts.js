@@ -2,6 +2,23 @@
     var app = angular.module('scripts', []);
 
     plots = [];
+    plotsData = {};
+
+    (function() {
+        var conn = new WebSocket("ws://127.0.0.1:8080/ws");
+        conn.onclose = function(evt) {
+            $('#errormodal').modal('show');
+        };
+        conn.onmessage = function(evt) {
+            var result = $.parseJSON(evt.data)[1].split(':');
+            plotsData[result[0]] = plotsData[result[0]].slice(1);
+            plotsData[result[0]].push([result[1] * 1000, result[2]]);
+            plots[result[0]].setData([plotsData[result[0]]]);
+            plots[result[0]].setupGrid();
+            plots[result[0]].draw();
+        };
+    })();
+
 
     timezoneJS.timezone.zoneFileBasePath = "static/tz";
     timezoneJS.timezone.defaultZoneFile = [];
