@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/fzzy/radix/redis"
 	"html/template"
 	"net/http"
 	"time"
@@ -10,15 +9,11 @@ import (
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	template.Must(template.New("index.html").Delims("{[{", "}]}").ParseFiles("index.html", "base.html")).Execute(w, r)
+	template.Must(template.New("index.html").Delims("{[{", "}]}").ParseFiles(conf.TemplateDir+"/index.html", conf.TemplateDir+"/base.html")).Execute(w, r)
 }
 
 func serveScripts(w http.ResponseWriter, r *http.Request) {
-	RedisClient, err := redis.Dial("tcp", "127.0.0.1:6379")
-
-	if err != nil {
-		errHandler(err)
-	}
+	RedisClient := GetRedisClient()
 
 	defer RedisClient.Close()
 
@@ -27,7 +22,7 @@ func serveScripts(w http.ResponseWriter, r *http.Request) {
 	scripts, err := RedisClient.Cmd("smembers", "sheriff:scripts").List()
 
 	if err != nil {
-		errHandler(err)
+		errHandler(err, "panic")
 	}
 
 	result, _ := json.Marshal(scripts)
@@ -35,11 +30,7 @@ func serveScripts(w http.ResponseWriter, r *http.Request) {
 }
 
 func getScriptInfo(w http.ResponseWriter, r *http.Request) {
-	RedisClient, err := redis.Dial("tcp", "127.0.0.1:6379")
-
-	if err != nil {
-		errHandler(err)
-	}
+	RedisClient := GetRedisClient()
 
 	defer RedisClient.Close()
 
@@ -50,7 +41,7 @@ func getScriptInfo(w http.ResponseWriter, r *http.Request) {
 	script, err := RedisClient.Cmd("hgetall", "sheriff:scripts:"+scriptName).Hash()
 
 	if err != nil {
-		errHandler(err)
+		errHandler(err, "panic")
 	}
 
 	result, _ := json.Marshal(script)
@@ -59,11 +50,7 @@ func getScriptInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func getScriptChart(w http.ResponseWriter, r *http.Request) {
-	RedisClient, err := redis.Dial("tcp", "127.0.0.1:6379")
-
-	if err != nil {
-		errHandler(err)
-	}
+	RedisClient := GetRedisClient()
 
 	defer RedisClient.Close()
 
@@ -94,7 +81,7 @@ func getScriptChart(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		if err != nil {
-			errHandler(err)
+			errHandler(err, "panic")
 		}
 
 		result, _ := json.Marshal(data)
@@ -105,7 +92,7 @@ func getScriptChart(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		if err != nil {
-			errHandler(err)
+			errHandler(err, "panic")
 		}
 
 		result, _ := json.Marshal(data)
@@ -116,17 +103,13 @@ func getScriptChart(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *hub) realtimeScripts() {
-	RedisClient, err := redis.Dial("tcp", "127.0.0.1:6379")
-
-	if err != nil {
-		errHandler(err)
-	}
+	RedisClient := GetRedisClient()
 
 	defer RedisClient.Close()
 
 	for {
 		if data, err := RedisClient.Cmd("blpop", "sheriff:realtime", 0).List(); err != nil {
-			errHandler(err)
+			errHandler(err, "panic")
 		} else {
 			result, _ := json.Marshal(data)
 			h.broadcast <- result
@@ -141,7 +124,7 @@ func serveWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		errHandler(err)
+		errHandler(err, "fatal")
 		return
 	}
 

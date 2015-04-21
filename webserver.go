@@ -79,7 +79,7 @@ func StartServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", serveHome)
 	r.PathPrefix("/static/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, r.URL.Path[1:])
+		http.ServeFile(w, r, conf.StaticDir+"/"+r.URL.Path[len("/static/"):])
 	})
 	r.HandleFunc("/scripts", serveScripts)
 	r.HandleFunc("/scripts/{script}", getScriptInfo)
@@ -89,6 +89,6 @@ func StartServer() {
 	err := http.ListenAndServe(*addr, nil)
 
 	if err != nil {
-		errHandler(err)
+		errHandler(err, "fatal")
 	}
 }
