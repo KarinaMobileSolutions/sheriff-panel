@@ -2,17 +2,18 @@ package main
 
 import (
 	"encoding/json"
+	auth "github.com/abbot/go-http-auth"
 	"html/template"
 	"net/http"
 	"time"
 )
 
-func serveHome(w http.ResponseWriter, r *http.Request) {
+func serveHome(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	template.Must(template.New("index.html").Delims("{[{", "}]}").ParseFiles(conf.TemplateDir+"/index.html", conf.TemplateDir+"/base.html")).Execute(w, r)
 }
 
-func serveScripts(w http.ResponseWriter, r *http.Request) {
+func serveScripts(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	RedisClient := GetRedisClient()
 
 	defer RedisClient.Close()
@@ -29,7 +30,7 @@ func serveScripts(w http.ResponseWriter, r *http.Request) {
 	template.Must(template.New("scripts").Parse(string(result[:]))).Execute(w, r)
 }
 
-func getScriptInfo(w http.ResponseWriter, r *http.Request) {
+func getScriptInfo(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	RedisClient := GetRedisClient()
 
 	defer RedisClient.Close()
@@ -49,7 +50,7 @@ func getScriptInfo(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func getScriptChart(w http.ResponseWriter, r *http.Request) {
+func getScriptChart(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	RedisClient := GetRedisClient()
 
 	defer RedisClient.Close()

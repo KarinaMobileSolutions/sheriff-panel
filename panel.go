@@ -12,6 +12,7 @@ type Conf struct {
 	Redis       Database `json:"redis"`
 	TemplateDir string   `json:"templateDir"`
 	StaticDir   string   `json:"staticDir"`
+	PasswdFile  string   `json:"passwdFile"`
 }
 
 type Database struct {

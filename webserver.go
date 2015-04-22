@@ -1,6 +1,7 @@
 package main
 
 import (
+	auth "github.com/abbot/go-http-auth"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"net/http"
@@ -76,14 +77,18 @@ func (c *connection) writePump() {
 
 func StartServer() {
 	go h.run()
+
+	htpasswd := auth.HtpasswdFileProvider(conf.PasswdFile)
+	authenticator := auth.NewBasicAuthenticator("You shall not pass!", htpasswd)
+
 	r := mux.NewRouter()
-	r.HandleFunc("/", serveHome)
+	r.HandleFunc("/", authenticator.Wrap(serveHome))
 	r.PathPrefix("/static/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, conf.StaticDir+"/"+r.URL.Path[len("/static/"):])
 	})
-	r.HandleFunc("/scripts", serveScripts)
-	r.HandleFunc("/scripts/{script}", getScriptInfo)
-	r.HandleFunc("/scripts/chart/{script}", getScriptChart)
+	r.HandleFunc("/scripts", authenticator.Wrap(serveScripts))
+	r.HandleFunc("/scripts/{script}", authenticator.Wrap(getScriptInfo))
+	r.HandleFunc("/scripts/chart/{script}", authenticator.Wrap(getScriptChart))
 	r.HandleFunc("/ws", serveWebSocket)
 	http.Handle("/", r)
 	err := http.ListenAndServe(*addr, nil)
