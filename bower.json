@@ -4,6 +4,7 @@
     "bootstrap": "3.*",
     "flot": "0.8.*",
     "font-awesome": "4.*",
-    "timezone-js": "0.*"
+    "timezone-js": "0.*",
+    "angular": "1.*"
   }
 }
