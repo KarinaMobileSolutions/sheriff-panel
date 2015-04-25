@@ -30,7 +30,7 @@
             scope: {
                 name: '@name'
             },
-            templateUrl: 'static/tmpl/script-info-modal.html',
+            templateUrl: 'static/tmpl/script-info-modal.html?v=0.1',
             controller: ['$http', '$scope', function($http, $scope) {
                 $http.get('/scripts/'+$scope.name).success(function(data) {
                     $scope.details = data;
@@ -47,7 +47,7 @@
             scope: {
                 name: '@name'
             },
-            templateUrl: 'static/tmpl/script-info.html',
+            templateUrl: 'static/tmpl/script-info.html?v=0.1',
         };
     });
 
@@ -57,7 +57,7 @@
             scope: {
                 name: '@name'
             },
-            templateUrl: 'static/tmpl/script-chart.html',
+            templateUrl: 'static/tmpl/script-chart.html?v=0.1',
             controller: ['$http', '$scope', function($http, $scope) {
                 this.period = 'hour';
 
