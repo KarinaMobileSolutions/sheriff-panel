@@ -1,3 +1,8 @@
+<a tabindex="0" class="badge" role="button" id="{{name}}info" data-toggle="modal" data-target="#{{name}}modal">
+        <i class="fa fa-info"></i>
+</a>&nbsp;
+<span class="label label-default" id="{{name}}status">Status</span>&nbsp;
+<span ng-show="last_value != null" id="{{name}}lastvalue">Last Value: {{last_value}}</span>
 <div class="modal fade" id="{{name}}modal">
     <div class="modal-dialog">
         <div class="modal-content">

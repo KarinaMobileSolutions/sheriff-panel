@@ -8,6 +8,16 @@ import (
 	"time"
 )
 
+type ScriptInfo struct {
+	Args        string            `json:"args"`
+	Cmd         string            `json:"cmd"`
+	Description string            `json:"description"`
+	Directory   string            `json:"directory"`
+	Format      string            `json:"format"`
+	Status      map[string]string `json:"status"`
+	StatusSort  string            `json:"status_sort"`
+}
+
 func serveHome(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	template.Must(template.New("index.html").Delims("{[{", "}]}").ParseFiles(conf.TemplateDir+"/index.html", conf.TemplateDir+"/base.html")).Execute(w, r)
@@ -45,7 +55,24 @@ func getScriptInfo(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		errHandler(err, "panic")
 	}
 
-	result, _ := json.Marshal(script)
+	scriptStatus, err := RedisClient.Cmd("hgetall", "sheriff:scripts:"+scriptName+":status").Hash()
+
+	if err != nil {
+		errHandler(err, "panic")
+	}
+
+	info := ScriptInfo{
+		Cmd:         script["cmd"],
+		Args:        script["args"],
+		Directory:   script["directory"],
+		Description: script["description"],
+		Format:      script["format"],
+		Status:      scriptStatus,
+		StatusSort:  script["status_sort"],
+	}
+
+	result, _ := json.Marshal(info)
+
 	template.Must(template.New("scripts").Parse(string(result[:]))).Execute(w, r)
 
 }
